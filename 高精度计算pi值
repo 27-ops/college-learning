@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX 510
+
+typedef struct DNode{
+    int data;
+    struct DNode *prior,*next;
+}DNode,*Doublelist;
+
+void insert(Doublelist p,int data)  //尾插法插入元素
+{
+    Doublelist q=(Doublelist)malloc(sizeof(DNode));
+    q->data=data;
+    p->next=q;
+    q->prior=p;
+    q->next=NULL;
+    return;
+}
+
+int main()
+{
+    int n;
+    scanf("%d",&n);
+    Doublelist num;   //每次相加的元素的头指针
+    Doublelist sum;   //总和的头指针
+    num=(Doublelist)malloc(sizeof(DNode));
+    sum=(Doublelist)malloc(sizeof(DNode));
+    num->next=NULL;  num->prior=NULL;
+    sum->next=NULL;  sum->prior=NULL;
+
+    Doublelist pn=num,ps=sum;  //用于尾插
+    for(int i=0;i<MAX;i++)
+    {
+        insert(pn,0);
+        insert(ps,0);
+        pn=pn->next;
+        ps=ps->next;
+    }
+
+    Doublelist p1=num->next,p2=sum->next;
+    p1->data=2;  p2->data=2;
+    //找到尾结点
+    while(p1->next&&p2->next)
+    {
+        p1=p1->next;  p2=p2->next;
+    }
+    Doublelist nt=p1,st=p2;  //设置尾结点指针
+
+    int tmp=0; //计算中产生的临时数据
+    int ret=0; //计算中产生的进位或者借位
+ 
+    for(int i=1,t=3;i<10000;i++,t=t+2)
+    {
+        Doublelist p3=nt,p4=st;
+        ret=0;
+        while(p3)
+        {
+            tmp=p3->data*i+ret;
+            p3->data=tmp%10;
+            ret=tmp/10;
+            p3=p3->prior;
+        }   // 先计算乘法
+        ret=0;
+        p3=num->next;
+        while(p3)
+        {
+            tmp=p3->data+ret*10;
+            ret=tmp%t;
+            p3->data=tmp/t;
+            p3=p3->next;
+        }  //后算除法
+        ret=0;
+        p3=nt;
+        while(p3&&p4)
+        {
+            tmp=p3->data+p4->data+ret;
+            ret=tmp/10;
+            p4->data=tmp%10;
+            p3=p3->prior;
+            p4=p4->prior;
+        }
+    }
+    Doublelist p0=sum->next;
+    printf("%d.",p0->data);
+    for(int i=0;i<n;i++)
+    {   
+        p0=p0->next;
+        printf("%d",p0->data);
+    }
+    printf("\n");
+
+    return 0;
+}
